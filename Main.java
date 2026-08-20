@@ -2,10 +2,12 @@ public class Main {
     public static void main(String[] args) {
         // Mock token stream representing the string expression: x * 3 + y
         Token[] stream = {
+                new Token(TokenKind.LPAREN, null),
                 new Token(TokenKind.ID, "x"),
-                new Token(TokenKind.TIMES, null),
-                new Token(TokenKind.NUM, 3),
                 new Token(TokenKind.PLUS, null),
+                new Token(TokenKind.NUM, 3),
+                new Token(TokenKind.RPAREN, null),
+                new Token(TokenKind.TIMES, null),
                 new Token(TokenKind.ID, "y"),
                 new Token(TokenKind.EOF, null)
         };
@@ -21,6 +23,11 @@ public class Main {
         Exp astRoot = parser.parse();
         System.out.println(
                 "Successfully generated complete AST root node object (" + astRoot.getClass().getSimpleName() + ").");
+
+        // NEW: Print the visual tree structure!
+        System.out.println("\n[Step 1.5] Visual AST Structure:");
+        ASTPrinter printer = new ASTPrinter();
+        printer.print(astRoot);
 
         // 3. Lower AST into Assembly Code via Target Code Generator
         System.out.println("\n[Step 2] Traversing AST to emit hardware assembly instructions:");

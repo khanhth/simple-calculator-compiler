@@ -11,4 +11,9 @@ final class OpExp extends Exp {
         this.operator = operator;
         this.right = right;
     }
+
+    @Override
+    public <R, C> R accept(ASTVisitor<R, C> v, C context) {
+        return v.visit(this, context); // Double dispatch: calls the OpExp visit method
+    }
 }

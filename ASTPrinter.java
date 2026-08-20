@@ -20,13 +20,16 @@ class ASTPrinter implements ASTVisitor<Void, PrintContext> {
 
     @Override
     public Void visit(OpExp op, PrintContext ctx) {
-        // 1. Print the current node using its own pre-calculated indent and branch symbol
+        // 1. Print the current node using its own pre-calculated indent and branch
+        // symbol
         System.out.println(ctx.indent + "OP (" + ((op.operator == OpExp.PLUS) ? "PLUS (+)" : "TIMES (*)") + ")");
 
-        // 2. Derive the correct prefix line for our children based on whether we are last or not
+        // 2. Derive the correct prefix line for our children based on whether we are
+        // last or not
         String childPrefix = ctx.indent + (ctx.isLast ? "    " : "│   ");
 
-        // 3. Explicitly construct the exact visual path for the left and right child nodes
+        // 3. Explicitly construct the exact visual path for the left and right child
+        // nodes
         op.left.accept(this, new PrintContext(childPrefix + "├── ", false));
         op.right.accept(this, new PrintContext(childPrefix + "└── ", true));
         return null;

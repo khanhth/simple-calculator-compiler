@@ -1,7 +1,7 @@
 final class ASTParser {
-    private final MockLexer lexer;
+    private final Lexer lexer;
 
-    ASTParser(MockLexer lexer) {
+    ASTParser(Lexer lexer) {
         this.lexer = lexer;
     }
 

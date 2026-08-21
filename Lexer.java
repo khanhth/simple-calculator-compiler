@@ -1,3 +1,4 @@
+
 class Lexer {
     private final String input;
     private int position = 0;

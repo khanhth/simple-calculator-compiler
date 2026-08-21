@@ -1,8 +1,9 @@
 // ============================================================================
-// 2. THE GENERIC VISITOR INTERFACE
+// 2. THE GENERIC VISITOR (PATTERN) INTERFACE
 // ============================================================================
 // R = Return type of the visit operation
 // C = Context state type passed down the traversal path
+
 interface ASTVisitor<R, C> {
     R visit(NumExp n, C context);
 

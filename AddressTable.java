@@ -1,18 +1,21 @@
+// ============================================================================
+// 4. SYMBOL ADDRESS TABLE (Code Generation Metadata)
+// ============================================================================
+
 import java.util.Map;
+import java.util.HashMap;
 
 final class AddressTable {
-    private static final Map<String, Integer> OFFSETS = Map.ofEntries(
-            Map.entry("x", -8),
-            Map.entry("y", -12));
-
-    private AddressTable() {
+    private static final Map<String, Integer> offsets = new HashMap<>();
+    static {
+        offsets.put("x", -8); // Allocate x at Frame Pointer Offset -8
+        offsets.put("y", -12); // Allocate y at Frame Pointer Offset -12
     }
 
-    static int getOffset(String name) {
-        Integer offset = OFFSETS.get(name);
-        if (offset == null) {
-            throw new RuntimeException("Compile Error: Variable '" + name + "' not declared.");
+    public static int getOffset(String name) {
+        if (!offsets.containsKey(name)) {
+            throw new RuntimeException("Backend Error: Missing memory offset mapping for target: " + name);
         }
-        return offset;
+        return offsets.get(name);
     }
 }

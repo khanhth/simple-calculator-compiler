@@ -1,6 +1,3 @@
-// ============================================================================
-// 6. VISITOR IMPLEMENTATION: AST PRINTER
-// ============================================================================
 // Context payload to pass down the call stack context immutably
 class PrintContext {
     final String indent;

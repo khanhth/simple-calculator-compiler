@@ -1,20 +1,30 @@
+// ============================================================================
+// 6. VISITOR 1 IMPLEMENTATION: STATELESS AST PRINTER (Visualization Phase)
+// ============================================================================
+
 // Return type is Void (prints directly), Context type is PrintContext
 class ASTPrinter implements ASTVisitor<Void, PrintContext> {
 
     public void print(Exp exp) {
         // Start traversal with an initial stack-allocated context frame
         exp.accept(this, new PrintContext("", true));
+        // TODO: KTR to check why `isLast` is set to true here, see commented code below
+        // exp.accept(this, new PrintContext(""));
     }
 
     @Override
     public Void visit(NumExp n, PrintContext ctx) {
         System.out.println(ctx.indent + "NUM (" + n.value + ")");
+        // TODO: KTR to check what happens if we remove `ctx.indent` here, see commented code below
+        // System.out.println("NUM (" + n.value + ")");
         return null;
     }
 
     @Override
     public Void visit(IdExp id, PrintContext ctx) {
         System.out.println(ctx.indent + "ID (\"" + id.name + "\")");
+        // TODO: KTR to check what happens if we remove `ctx.indent` here, see commented code below
+        // System.out.println("\"" + id.name + "\"");
         return null;
     }
 

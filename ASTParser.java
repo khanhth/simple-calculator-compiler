@@ -1,3 +1,6 @@
+// ============================================================================
+// 5. RECURSIVE-DESCENT PARSER (Syntax Analysis)
+// =======================================================================
 final class ASTParser {
     private final Lexer lexer;
 

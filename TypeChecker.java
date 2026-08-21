@@ -1,4 +1,8 @@
-// Return type is Boolean (Is Valid?), Context type is TypeContext
+// ============================================================================
+// 7. VISITOR 2 IMPLEMENTATION: SEMANTIC ANALYZER (Type and Initialization Verification)
+// ============================================================================
+
+// NOTE on class header: Return type is `Boolean` (Is Valid?), Context type is `TypeContext`
 class TypeChecker implements ASTVisitor<Boolean, TypeContext> {
 
     public boolean check(Exp exp, TypeContext ctx) {
@@ -15,7 +19,7 @@ class TypeChecker implements ASTVisitor<Boolean, TypeContext> {
     public Boolean visit(IdExp id, TypeContext ctx) {
         // Check if the variable name has been registered in our initialized context
         if (!ctx.initializedVariables.contains(id.name)) {
-            System.err.println("Semantic Error: Variable '" + id.name + "' used before initialization!");
+            System.err.println("❌ Semantic Error: Variable '" + id.name + "' used but never declared!");
             return false;
         }
         return true;

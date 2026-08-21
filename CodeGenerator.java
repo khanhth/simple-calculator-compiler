@@ -1,7 +1,8 @@
 // ============================================================================
-// 7. VISITOR IMPLEMENTATION: TARGET CODE GENERATOR
+// 8. VISITOR 3 IMPLEMENTATION: TARGET CODE GENERATOR (Synthesis Phase)
 // ============================================================================
-// Return type is String (Register Name), Context type is Void (No state needed)
+
+// NOTE on class header: Return type is `String` (Register Name), Context type is `Void` (No state needed)
 class CodeGenerator implements ASTVisitor<String, Void> {
     private int registerCount = 0;
 
@@ -34,12 +35,8 @@ class CodeGenerator implements ASTVisitor<String, Void> {
         String leftReg = op.left.accept(this, null);
         String rightReg = op.right.accept(this, null);
         String resultReg = nextRegister();
-
-        if (op.operator == OpExp.PLUS) {
-            System.out.println("ADD   " + resultReg + ", " + leftReg + ", " + rightReg);
-        } else if (op.operator == OpExp.TIMES) {
-            System.out.println("MUL   " + resultReg + ", " + leftReg + ", " + rightReg);
-        }
+        String inst = (op.operator == OpExp.PLUS) ? "ADD   " : "MUL   ";
+        System.out.println(inst + resultReg + ", " + leftReg + ", " + rightReg);
         return resultReg;
     }
 }

@@ -1,39 +1,31 @@
 public class Main {
     public static void main(String[] args) {
-        // Mock token stream representing the string expression: x * 3 + y
-        Token[] stream = {
-                new Token(TokenKind.LPAREN, null),
-                new Token(TokenKind.ID, "x"),
-                new Token(TokenKind.PLUS, null),
-                new Token(TokenKind.NUM, 3),
-                new Token(TokenKind.RPAREN, null),
-                new Token(TokenKind.TIMES, null),
-                new Token(TokenKind.ID, "y"),
-                new Token(TokenKind.EOF, null)
-        };
+        System.out.println("--- Starting Visitor-Driven Semantic Analysis Test ---");
 
-        System.out.println("--- Starting Compiler Pipeline for 'x * 3 + y' ---");
+        // Target Expression: x * 3 + y
+        Exp leftSubtree = new OpExp(new IdExp("x"), OpExp.TIMES, new NumExp(3));
+        Exp completeTree = new OpExp(leftSubtree, OpExp.PLUS, new IdExp("y"));
 
-        // 1. Init Lexer & Parser
-        MockLexer lexer = new MockLexer(stream);
-        ASTParser parser = new ASTParser(lexer);
+        // Set up our initialized variables context
+        TypeContext semanticEnvironment = new TypeContext();
+        semanticEnvironment.initializedVariables.add("x"); // 'x' is declared!
+        // Notice: We intentionally do NOT add 'y' to simulate a programmer error!
 
-        // 2. Parse token stream into an Abstract Syntax Tree (AST)
-        System.out.println("\n[Step 1] Parsing tokens into AST...");
-        Exp astRoot = parser.parse();
-        System.out.println(
-                "Successfully generated complete AST root node object (" + astRoot.getClass().getSimpleName() + ").");
+        // 1. Run Semantic Analysis Check
+        System.out.println("\n[Step 1] Running Type Checker & Initialization Analysis...");
+        TypeChecker checker = new TypeChecker();
+        boolean isSafe = checker.check(completeTree, semanticEnvironment);
 
-        // NEW: Print the visual tree structure!
-        System.out.println("\n[Step 1.5] Visual AST Structure:");
-        ASTPrinter printer = new ASTPrinter();
-        printer.print(astRoot);
+        // 2. Conditional Compilation Guard
+        if (!isSafe) {
+            System.out.println("\n🛑 Compilation Halted: Code contains semantic errors.");
+            return;
+        }
 
-        // 3. Lower AST into Assembly Code via Target Code Generator
-        System.out.println("\n[Step 2] Traversing AST to emit hardware assembly instructions:");
+        // 3. Emit Assembly Code (Only executes if isSafe is true)
+        System.out.println("\n[Step 2] Emitting target assembly instructions:");
         CodeGenerator codegen = new CodeGenerator();
-        codegen.compile(astRoot);
-
-        System.out.println("\n--- Compilation Finished ---");
+        codegen.compile(completeTree);
     }
+
 }

@@ -10,6 +10,7 @@ public class Main {
         TypeContext semanticEnvironment = new TypeContext();
         semanticEnvironment.initializedVariables.add("x"); // 'x' is declared!
         // Notice: We intentionally do NOT add 'y' to simulate a programmer error!
+        semanticEnvironment.initializedVariables.add("y");
 
         // 1. Run Semantic Analysis Check
         System.out.println("\n[Step 1] Running Type Checker & Initialization Analysis...");

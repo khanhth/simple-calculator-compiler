@@ -17,13 +17,22 @@ class TypeChecker implements ASTVisitor<Boolean, TypeContext> {
 
     @Override
     public Boolean visit(IdExp id, TypeContext ctx) {
-        // Check if the variable name has been registered in our initialized context
-        if (!ctx.initializedVariables.contains(id.name)) {
-            System.err.println("❌ Semantic Error: Variable '" + id.name + "' used but never declared!");
+        // Because the parser now converts strings to abstract VarIDs using the table,
+        // a valid non-null varId means the variable was successfully declared!
+        if (id.varId == null) {
+            System.err.println("❌ Semantic Error: Unresolved variable reference found!");
             return false;
         }
         return true;
     }
+    // public Boolean visit(IdExp id, TypeContext ctx) {
+    //     // Check if the variable name has been registered in our initialized context
+    //     if (!ctx.initializedVariables.contains(id.name)) {
+    //         System.err.println("❌ Semantic Error: Variable '" + id.name + "' used but never declared!");
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     @Override
     public Boolean visit(OpExp op, TypeContext ctx) {

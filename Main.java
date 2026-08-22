@@ -1,45 +1,87 @@
 public class Main {
-    private static void runCompilerPipeline(String sourceCode, TypeContext env) {
-        System.out.println("\n========================================================");
-        System.out.println("🚀 Compiling Input: " + sourceCode + "");
-        System.out.println("========================================================");
-        try {
-            // Phase 1: Lexical Analysis & Parsing
-            Lexer lexer = new Lexer(sourceCode);
-            ASTParser parser = new ASTParser(lexer);
-            Exp rootNode = parser.parse();
-            System.out.println("[Step 1] Lexing & Parsing Successful.");
-            // Phase 2: Structural Verification (Visualizer)
-            System.out.print("[Step 2] Visual AST Tree Layout: ");
-            new ASTPrinter().print(rootNode);
-            // Phase 3: Semantic Analysis (Type Checker Validation Guard)
-            System.out.println("[Step 3] Running Semantic Analysis Check...");
-            boolean validationPassed = new TypeChecker().check(rootNode, env);
-            if (!validationPassed) {
-                System.out.println("🛑 COMPILATION HALTED: Code context validation failed.");
-                return;
-            }
-            System.out.println("👉 Semantic Analysis Verification Passed.");
-            // Phase 4: Target Assembly Synthesis
-            System.out.println("[Step 4] Lowering AST to Hardware Assembly Code:");
-            new CodeGenerator().compile(rootNode);
-            System.out.println("\n🎉 COMPILATION SUCCESSFUL!");
-        } catch (Exception e) {
-            System.out.println("💥 COMPILATION CRASHED: " + e.getMessage());
+    public static void main(String[] args) {
+        String sourceCode = "x * 3 + y";
+        System.out.println("--- Starting Modern Decoupled Compiler Pipeline ---");
+
+        // 1. Initialize Frontend Environment
+        FrontendSymbolTable frontendTable = new FrontendSymbolTable();
+        frontendTable.declare("x", "int");
+        frontendTable.declare("y", "int");
+
+        // 2. Lexical & Syntax Analysis (Parsing)
+        Lexer lexer = new Lexer(sourceCode);
+        ASTParser parser = new ASTParser(lexer, frontendTable);
+        Exp astRoot = parser.parse();
+        System.out.println("[Step 1] Parsing complete. Abstract tree generated.");
+
+        // 3. Visual Layout Phase
+        System.out.print("[Step 2] AST Tree Visual: ");
+        new ASTPrinter().print(astRoot);
+
+        // 4. Semantic Validation Guard using the TypeChecker!
+        System.out.println("[Step 3] Running Type Checker Validation...");
+        TypeChecker checker = new TypeChecker();
+        TypeContext semanticContext = new TypeContext(); // Context tracking environment states if needed
+
+        boolean isSemanticallyValid = checker.check(astRoot, semanticContext);
+
+        if (!isSemanticallyValid) {
+            System.out.println("🛑 COMPILATION HALTED: Code context validation failed.");
+            return; // Safety block: prevents emitting unsafe assembly code
         }
+        System.out.println("👉 Semantic Analysis Clean.");
+
+        // 5. Backend Code Generation Phase
+        System.out.println("[Step 4] Lowering to Target Hardware Assembly:");
+        // Compile tree down to target backend layouts
+        BackendMemoryLayout x86Layout = new BackendMemoryLayout();
+        CodeGenerator codegen = new CodeGenerator();
+        codegen.compile(astRoot, x86Layout);
+
+        System.out.println("\n🎉 COMPILATION SUCCESSFUL!");
     }
 
-    public static void main(String[] args) {
-        // Prepare a valid environment where 'x' and 'y' are safely declared
-        TypeContext validEnvironment = new TypeContext();
-        validEnvironment.initializedVariables.add("x");
-        validEnvironment.initializedVariables.add("y");
-        // Test 1: Compile a completely valid mathematical statement
-        runCompilerPipeline("x * 3 + y", validEnvironment);
-        // Test 2: Compile code containing a semantic bug (using 'z' which is
-        // undeclared)
-        // runCompilerPipeline("(x + 5) * z", validEnvironment);
-    }
+    // private static void runCompilerPipeline(String sourceCode, TypeContext env) {
+    // System.out.println("\n========================================================");
+    // System.out.println("🚀 Compiling Input: " + sourceCode + "");
+    // System.out.println("========================================================");
+    // try {
+    // // Phase 1: Lexical Analysis & Parsing
+    // Lexer lexer = new Lexer(sourceCode);
+    // ASTParser parser = new ASTParser(lexer);
+    // Exp rootNode = parser.parse();
+    // System.out.println("[Step 1] Lexing & Parsing Successful.");
+    // // Phase 2: Structural Verification (Visualizer)
+    // System.out.print("[Step 2] Visual AST Tree Layout: ");
+    // new ASTPrinter().print(rootNode);
+    // // Phase 3: Semantic Analysis (Type Checker Validation Guard)
+    // System.out.println("[Step 3] Running Semantic Analysis Check...");
+    // boolean validationPassed = new TypeChecker().check(rootNode, env);
+    // if (!validationPassed) {
+    // System.out.println("🛑 COMPILATION HALTED: Code context validation failed.");
+    // return;
+    // }
+    // System.out.println("👉 Semantic Analysis Verification Passed.");
+    // // Phase 4: Target Assembly Synthesis
+    // System.out.println("[Step 4] Lowering AST to Hardware Assembly Code:");
+    // new CodeGenerator().compile(rootNode);
+    // System.out.println("\n🎉 COMPILATION SUCCESSFUL!");
+    // } catch (Exception e) {
+    // System.out.println("💥 COMPILATION CRASHED: " + e.getMessage());
+    // }
+    // }
+
+    // public static void main(String[] args) {
+    // // Prepare a valid environment where 'x' and 'y' are safely declared
+    // TypeContext validEnvironment = new TypeContext();
+    // validEnvironment.initializedVariables.add("x");
+    // validEnvironment.initializedVariables.add("y");
+    // // Test 1: Compile a completely valid mathematical statement
+    // runCompilerPipeline("x * 3 + y", validEnvironment);
+    // // Test 2: Compile code containing a semantic bug (using 'z' which is
+    // // undeclared)
+    // // runCompilerPipeline("(x + 5) * z", validEnvironment);
+    // }
 
     // public static void main(String[] args) {
     // // A raw code string input representing the mathematical expression

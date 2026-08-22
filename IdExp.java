@@ -1,12 +1,12 @@
-final class IdExp extends Exp {
-    public final String name;
+class IdExp extends Exp {
+    final VarID varId; // Pure abstract reference handle
 
-    IdExp(String name) {
-        this.name = name;
+    IdExp(VarID varId) {
+        this.varId = varId;
     }
 
     @Override
     public <R, C> R accept(ASTVisitor<R, C> v, C context) {
-        return v.visit(this, context); // Double dispatch: calls the IdExp visit method
+        return v.visit(this, context);
     }
 }

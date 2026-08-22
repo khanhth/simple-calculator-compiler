@@ -6,25 +6,30 @@
 class ASTPrinter implements ASTVisitor<Void, PrintContext> {
 
     public void print(Exp exp) {
-        // Start traversal with an initial stack-allocated context frame
-        exp.accept(this, new PrintContext("", true));
         // TODO: KTR to check why `isLast` is set to true here, see commented code below
         // exp.accept(this, new PrintContext(""));
+
+        // Start traversal with an initial stack-allocated context frame
+        exp.accept(this, new PrintContext("", true));
     }
 
     @Override
     public Void visit(NumExp n, PrintContext ctx) {
-        System.out.println(ctx.indent + "NUM (" + n.value + ")");
-        // TODO: KTR to check what happens if we remove `ctx.indent` here, see commented code below
+        // TODO: KTR to check what happens if we remove `ctx.indent` here, see commented
+        // code below
+
         // System.out.println("NUM (" + n.value + ")");
+        System.out.println(ctx.indent + "NUM (" + n.value + ")");
         return null;
     }
 
     @Override
     public Void visit(IdExp id, PrintContext ctx) {
-        System.out.println(ctx.indent + "ID (\"" + id.name + "\")");
         // TODO: KTR to check what happens if we remove `ctx.indent` here, see commented code below
-        // System.out.println("\"" + id.name + "\"");
+        // System.out.println("\"" + id.varId + "\"");
+
+        // Prints out the abstract variable tag, like: ID (%v0)
+        System.out.println(ctx.indent + "ID (" + id.varId + ")");
         return null;
     }
 

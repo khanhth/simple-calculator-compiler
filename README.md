@@ -11,3 +11,14 @@
     [-] 2.8. What happens when the lookahead encounters an empty string or file.
     [-] 2.9. See how to implement **error reporting line numbers** to tell the programmer *where* a mistake happened?
     [-] 2.10. Add an **Optimizer Visitor** to simplify constant expressions (like rewriting `3 * 4` directly to `12` before generating assembly)?
+    [-] 2.11. Explain why the `FrontendSymbolTable` class contains zero physical memory offsets.
+    [-] 2.12. Explain why the AST node no longer carries the raw name string into the backend.
+    [-] 2.13. Rewrite your core ASTParser.F() method to query the FrontendSymbolTable and instantiate this new variant of IdExp.
+    [-] 2.14. Step into generating a text-based 3-Address Code (3AC) Intermediate Representation (IR) before making any assembly code at all.
+    [-] 2.15. **The Pipeline in Action**: If you feed "x * 3 + y" through this modern separated setup, your pipeline connects seamlessly without breaking architectural walls...
+    [-] 2.16. Update your ASTParser.F() method so it declares string names in the FrontendSymbolTable and correctly initializes this new variant of IdExp.
+    [-] 2.17. Move forward with creating a true 3-Address Code (3AC) Intermediate Representation (IR) layer.
+    [-] 2.18. Update your ASTPrinter class to print out %v0 and %v1 names instead of raw variable names.
+    [-] 2.19. Explain why "Since TypeChecker is a high-level frontend validation step, it no longer needs to check string sets manually because the ASTParser itself now acts as the gatekeeper via the FrontendSymbolTable."
+[-] 3. Examine the relationship between the enviroment (variable context) class and the address table class.
+[-] 4. Examine the manually passing frontendTable code in `Main.java`, i.e. `ASTParser parser = new ASTParser(lexer, frontendTable); // Passed frontendTable here`

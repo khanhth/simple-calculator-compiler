@@ -1,12 +1,9 @@
-import java.util.HashSet;
-import java.util.Set;
-
 // Context state object used to pass down the list of declared variables
 class TypeContext {
-    // Stores names of variables that have been safely declared/initialized
-    final Set<String> initializedVariables;
+    final FrontendSymbolTable symbolTable;
 
-    TypeContext() {
-        this.initializedVariables = new HashSet<>();
+    // Pass your active frontend table into the context
+    TypeContext(FrontendSymbolTable table) {
+        this.symbolTable = table;
     }
 }

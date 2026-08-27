@@ -21,11 +21,11 @@ public class Main {
         // 4. Semantic Validation Guard using the TypeChecker!
         System.out.println("[Step 3] Running Type Checker Validation...");
         TypeChecker checker = new TypeChecker();
-        TypeContext semanticContext = new TypeContext(); // Context tracking environment states if needed
+        TypeContext semanticContext = new TypeContext(frontendTable); // Context tracking environment states if needed
 
-        boolean isSemanticallyValid = checker.check(astRoot, semanticContext);
+        DataType isSemanticallyValid = checker.check(astRoot, semanticContext);
 
-        if (!isSemanticallyValid) {
+        if (isSemanticallyValid == DataType.ERROR) {
             System.out.println("🛑 COMPILATION HALTED: Code context validation failed.");
             return; // Safety block: prevents emitting unsafe assembly code
         }
@@ -33,10 +33,9 @@ public class Main {
 
         // 5. Backend Code Generation Phase
         System.out.println("[Step 4] Lowering to Target Hardware Assembly:");
-        // Compile tree down to target backend layouts
-        BackendMemoryLayout x86Layout = new BackendMemoryLayout();
+        BackendMemoryLayout hardwareLayout = new BackendMemoryLayout();
         CodeGenerator codegen = new CodeGenerator();
-        codegen.compile(astRoot, x86Layout);
+        codegen.compile(astRoot, hardwareLayout);
 
         System.out.println("\n🎉 COMPILATION SUCCESSFUL!");
     }

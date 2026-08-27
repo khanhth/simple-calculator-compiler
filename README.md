@@ -20,5 +20,8 @@
     [-] 2.17. Move forward with creating a true 3-Address Code (3AC) Intermediate Representation (IR) layer.
     [-] 2.18. Update your ASTPrinter class to print out %v0 and %v1 names instead of raw variable names.
     [-] 2.19. Explain why "Since TypeChecker is a high-level frontend validation step, it no longer needs to check string sets manually because the ASTParser itself now acts as the gatekeeper via the FrontendSymbolTable."
+    [-] 2.20. proceed to constructing the text-based 3-Address Code (3AC) Intermediate Representation (IR) layer.
+    [-] 2.21. Explain what are "Type Inference" and "Synthesized Attribute Calculation" feature and how it's related to the statement "In a recursive-descent parser or interpreter, every non-terminal grammar symbol (\(E\), \(T\), \(F\)) is implemented as a function. The synthesized attribute or "type" of that symbol is defined by what the function returns." in the book.
 [-] 3. Examine the relationship between the enviroment (variable context) class and the address table class.
-[-] 4. Examine the manually passing frontendTable code in `Main.java`, i.e. `ASTParser parser = new ASTParser(lexer, frontendTable); // Passed frontendTable here`
+[-] 4. Examine the manually passing frontendTable code in `Main.java`, i.e. `ASTParser parser = new ASTParser(lexer, frontendTable); // Passed frontendTable here`.
+[-] 5. [Checkpoint] Audit the TypeChecker's ability to enforce strict type compliance calculations on the nodes.

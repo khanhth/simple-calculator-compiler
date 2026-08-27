@@ -19,4 +19,12 @@ class FrontendSymbolTable {
     public VarID lookup(String name) {
         return idMap.get(name); // Returns null if not declared
     }
+
+    public String getTypeOf(VarID varId) {
+        if (!typeMap.containsKey(varId)) {
+            throw new RuntimeException("Compiler Internal Error: VarID " + varId + " missing type metadata.");
+        }
+        return typeMap.get(varId);
+    }
+
 }

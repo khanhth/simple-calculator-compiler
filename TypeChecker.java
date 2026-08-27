@@ -1,45 +1,58 @@
 // ============================================================================
-// 7. VISITOR 2 IMPLEMENTATION: SEMANTIC ANALYZER (Type and Initialization Verification)
+// 7. VISITOR 2 IMPLEMENTATION: SEMANTIC ANALYZER
 // ============================================================================
+// Return type is now DataType, Context remains TypeContext
+class TypeChecker implements ASTVisitor<DataType, TypeContext> {
 
-// NOTE on class header: Return type is `Boolean` (Is Valid?), Context type is `TypeContext`
-class TypeChecker implements ASTVisitor<Boolean, TypeContext> {
-
-    public boolean check(Exp exp, TypeContext ctx) {
+    public DataType check(Exp exp, TypeContext ctx) {
         return exp.accept(this, ctx);
     }
 
     @Override
-    public Boolean visit(NumExp n, TypeContext ctx) {
-        // Literal numbers are always valid and type-safe
-        return true;
+    public DataType visit(NumExp n, TypeContext ctx) {
+        // A literal number node always synthesizes to an INT type
+        return DataType.INT;
     }
 
     @Override
-    public Boolean visit(IdExp id, TypeContext ctx) {
-        // Because the parser now converts strings to abstract VarIDs using the table,
-        // a valid non-null varId means the variable was successfully declared!
-        if (id.varId == null) {
-            System.err.println("❌ Semantic Error: Unresolved variable reference found!");
-            return false;
+    public DataType visit(IdExp id, TypeContext ctx) {
+        // Ask the frontend symbol table what type this variable was declared as
+        // (Assuming you updated FrontendSymbolTable to let you query types via VarID)
+        String declaredType = ctx.symbolTable.getTypeOf(id.varId);
+
+        if ("string".equals(declaredType))
+            return DataType.STRING;
+        return DataType.INT;
+    }
+
+    @Override
+    public DataType visit(OpExp op, TypeContext ctx) {
+        // 1. Recursively discover the types of the child branches
+        DataType leftType = op.left.accept(this, ctx);
+        DataType rightType = op.right.accept(this, ctx);
+
+        // 2. Type Compliance Check for Multiplication (*)
+        if (op.operator == OpExp.TIMES) {
+            if (leftType == DataType.STRING || rightType == DataType.STRING) {
+                System.err.println("❌ Semantic Error: Cannot mathematically multiply a STRING!");
+                return DataType.ERROR; // Bubble the error type up the tree
+            }
         }
-        return true;
-    }
-    // public Boolean visit(IdExp id, TypeContext ctx) {
-    //     // Check if the variable name has been registered in our initialized context
-    //     if (!ctx.initializedVariables.contains(id.name)) {
-    //         System.err.println("❌ Semantic Error: Variable '" + id.name + "' used but never declared!");
-    //         return false;
-    //     }
-    //     return true;
-    // }
 
-    @Override
-    public Boolean visit(OpExp op, TypeContext ctx) {
-        // Recursively verify both sides of the mathematical operator are valid
-        boolean leftValid = op.left.accept(this, ctx);
-        boolean rightValid = op.right.accept(this, ctx);
+        // 3. Type Compliance Check for Addition (+)
+        if (op.operator == OpExp.PLUS) {
+            // Allow string concatenation if both sides are strings, or standard addition
+            // for ints
+            if (leftType == DataType.INT && rightType == DataType.INT) {
+                return DataType.INT;
+            } else if (leftType == DataType.STRING && rightType == DataType.STRING) {
+                return DataType.STRING; // Type synthesis: String + String = String
+            } else {
+                System.err.println("❌ Semantic Error: Type Mismatch! Cannot add " + leftType + " and " + rightType);
+                return DataType.ERROR;
+            }
+        }
 
-        return leftValid && rightValid;
+        return DataType.INT;
     }
 }

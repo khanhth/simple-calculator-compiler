@@ -16,9 +16,8 @@ class TypeChecker implements ASTVisitor<DataType, TypeContext> {
 
     @Override
     public DataType visit(IdExp id, TypeContext ctx) {
-        // Ask the frontend symbol table what type this variable was declared as
-        // (Assuming you updated FrontendSymbolTable to let you query types via VarID)
-        String declaredType = ctx.symbolTable.getTypeOf(id.varId);
+        // Navigate through the unified compiler context to get the type metadata
+        String declaredType = ctx.compilerCtx.getSymbolTable().getTypeOf(id.varId);
 
         if ("string".equals(declaredType))
             return DataType.STRING;

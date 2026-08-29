@@ -1,5 +1,5 @@
 // ============================================================================
-// 2. THE GENERIC VISITOR (PATTERN) INTERFACE
+// 3. GENERIC VISITOR PATTERN INTERFACE
 // ============================================================================
 // R = Return type of the visit operation
 // C = Context state type passed down the traversal path

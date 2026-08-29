@@ -1,8 +1,8 @@
-final class NumExp extends Exp {
-    public final int value;
+class NumExp extends Exp {
+    public final int val;
 
-    NumExp(int value) {
-        this.value = value;
+    public NumExp(int v) {
+        this.val = v;
     }
 
     @Override

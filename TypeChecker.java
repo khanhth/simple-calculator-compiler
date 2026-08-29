@@ -31,7 +31,7 @@ class TypeChecker implements ASTVisitor<DataType, TypeContext> {
         DataType rightType = op.right.accept(this, ctx);
 
         // 2. Type Compliance Check for Multiplication (*)
-        if (op.operator == OpExp.TIMES) {
+        if (op.op == OpExp.TIMES) {
             if (leftType == DataType.STRING || rightType == DataType.STRING) {
                 System.err.println("❌ Semantic Error: Cannot mathematically multiply a STRING!");
                 return DataType.ERROR; // Bubble the error type up the tree
@@ -39,7 +39,7 @@ class TypeChecker implements ASTVisitor<DataType, TypeContext> {
         }
 
         // 3. Type Compliance Check for Addition (+)
-        if (op.operator == OpExp.PLUS) {
+        if (op.op == OpExp.PLUS) {
             // Allow string concatenation if both sides are strings, or standard addition
             // for ints
             if (leftType == DataType.INT && rightType == DataType.INT) {

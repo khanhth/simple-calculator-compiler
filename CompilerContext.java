@@ -1,3 +1,6 @@
+// ============================================================================
+// 2. MODERN COMPILER CONTEXT & SYMBOL MANAGERS
+// ============================================================================
 public class CompilerContext {
     private final FrontendSymbolTable symbolTable;
 
@@ -9,7 +12,6 @@ public class CompilerContext {
         return this.symbolTable;
     }
 
-    // High-level utility method to hide table internals from the caller
     public VarID registerVariable(String name, String type) {
         return this.symbolTable.declare(name, type);
     }

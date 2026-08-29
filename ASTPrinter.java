@@ -18,8 +18,8 @@ class ASTPrinter implements ASTVisitor<Void, PrintContext> {
         // TODO: KTR to check what happens if we remove `ctx.indent` here, see commented
         // code below
 
-        // System.out.println("NUM (" + n.value + ")");
-        System.out.println(ctx.indent + "NUM (" + n.value + ")");
+        // System.out.println("NUM (" + n.val + ")");
+        System.out.println(ctx.indent + "NUM (" + n.val + ")");
         return null;
     }
 
@@ -37,7 +37,7 @@ class ASTPrinter implements ASTVisitor<Void, PrintContext> {
     public Void visit(OpExp op, PrintContext ctx) {
         // 1. Print the current node using its own pre-calculated indent and branch
         // symbol
-        System.out.println(ctx.indent + "OP (" + ((op.operator == OpExp.PLUS) ? "PLUS (+)" : "TIMES (*)") + ")");
+        System.out.println(ctx.indent + "OP (" + ((op.op == OpExp.PLUS) ? "PLUS (+)" : "TIMES (*)") + ")");
 
         // 2. Derive the correct prefix line for our children based on whether we are
         // last or not

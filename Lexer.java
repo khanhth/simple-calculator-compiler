@@ -1,4 +1,3 @@
-
 class Lexer {
     private final String input;
     private int position = 0;
@@ -6,12 +5,14 @@ class Lexer {
 
     public Lexer(String input) {
         this.input = input;
-        this.advance(); // Bootstrap the lexer by reading the first token
+        this.advance(); // Bootstrap the lexer by reading the first token (lookahead?)
     }
 
     // Read the next character in the stream
     private char peek() {
-        if (position >= input.length()) return '\0';
+        if (position >= input.length()) {
+            return '\0';
+        }
         return input.charAt(position);
     }
 
@@ -55,6 +56,11 @@ class Lexer {
             token = new Token(TokenKind.RPAREN, null);
             return;
         }
+        if (current == ';') {
+            consumeChar();
+            token = new Token(TokenKind.SEMI, null);
+            return;
+        } // Semicolon support
 
         // 2. Lexing NUM Tokens (Digits)
         if (Character.isDigit(current)) {
@@ -75,8 +81,17 @@ class Lexer {
                 buffer.append(peek());
                 consumeChar();
             }
-            String identifierName = buffer.toString();
-            token = new Token(TokenKind.ID, identifierName); // Carrying string value
+            String lexeme = buffer.toString();
+
+            // ─── RESERVED KEYWORD LOOKUP ───
+            if ("int".equals(lexeme)) {
+                token = new Token(TokenKind.INT, null);
+            } else {
+                token = new Token(TokenKind.ID, lexeme); // Generic variable name
+            }
+            // TODO:
+            // Check the else branch for other cases where the lexeme is not "int" but also not a variable name.
+            // For example, if the lexeme is a reserved keyword like "if" or "while", we should handle those cases as well.
             return;
         }
 

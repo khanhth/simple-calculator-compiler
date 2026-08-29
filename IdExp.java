@@ -1,8 +1,8 @@
 class IdExp extends Exp {
-    final VarID varId; // Pure abstract reference handle
+    public final VarID varId; // Pure abstract reference handle
 
-    IdExp(VarID varId) {
-        this.varId = varId;
+    public IdExp(VarID id) {
+        this.varId = id;
     }
 
     @Override

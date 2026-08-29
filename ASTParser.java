@@ -1,4 +1,7 @@
 // Grammar:
+// P  → DecList Expression $
+// DecList → Declaration DecList | ε (can be empty)
+// DecList → int ID
 // S  → E $
 // E  → T E'
 // E' → + T E'
@@ -18,16 +21,32 @@
 // =======================================================================
 class ASTParser {
     private final Lexer lexer;
-    private final FrontendSymbolTable symbolTable; // 1. Added frontend table reference
+    private final CompilerContext context;
 
-    // 2. Inject the FrontendSymbolTable via the constructor
-    public ASTParser(Lexer lexer, FrontendSymbolTable symbolTable) {
+    public ASTParser(Lexer lexer, CompilerContext context) {
         this.lexer = lexer;
-        this.symbolTable = symbolTable;
+        this.context = context;
     }
 
-    public Exp parse() {
-        return E();
+    public ProgramNode parseProgram() {
+        ProgramNode program = new ProgramNode(null);
+
+        // Parse list of variable declarations separated by semicolons: int x; int y;
+        while (lexer.token.kind == TokenKind.INT) {
+            lexer.match(TokenKind.INT);
+            String name = (String) lexer.token.val;
+            lexer.match(TokenKind.ID);
+            lexer.match(TokenKind.SEMI); // Consume semicolon anchor
+
+            context.registerVariable(name, "int"); // Auto-register
+            program.declarations.add(new VarDeclStmt(name, "int"));
+        }
+
+        // Drop into main math expression
+        Exp mathExpression = E();
+        lexer.match(TokenKind.EOF);
+
+        return new ProgramNode(mathExpression);
     }
 
     private Exp E() {
@@ -37,7 +56,7 @@ class ASTParser {
     private Exp Eprime(Exp a) {
         if (lexer.token.kind == TokenKind.PLUS) {
             lexer.match(TokenKind.PLUS);
-            return Eprime(new OpExp(a, OpExp.PLUS, T()));
+            return Eprime(new OpExp(a, OpExp.PLUS, T())); // Structural left-associative binding
         }
         return a;
     }
@@ -49,31 +68,25 @@ class ASTParser {
     private Exp Tprime(Exp a) {
         if (lexer.token.kind == TokenKind.TIMES) {
             lexer.match(TokenKind.TIMES);
-            return Tprime(new OpExp(a, OpExp.TIMES, F()));
+            return Tprime(new OpExp(a, OpExp.TIMES, F())); // Structural left-associative binding
         }
         return a;
     }
 
     private Exp F() {
         if (lexer.token.kind == TokenKind.ID) {
-            String name = (String) lexer.token.value;
+            String name = (String) lexer.token.val;
             lexer.match(TokenKind.ID);
-
-            // 3. LOOKUP THE VARID: Convert the raw string name into an abstract VarID
-            VarID varId = symbolTable.lookup(name);
+            VarID varId = context.getSymbolTable().lookup(name);
             if (varId == null) {
-                // If your language allows automatic dynamic declaration upon usage:
-                varId = symbolTable.declare(name, "int");
-
-                // OR if you want it to fail for undeclared variables here instead:
-                // throw new RuntimeException("Compile Error: Variable '" + name + "' not
-                // declared.");
+                throw new RuntimeException("Compile Error: Variable '" + name + "' used before declaration.");
+                // if you want it to fail for undeclared variables here instead:
+                // throw new RuntimeException("Compile Error: var. " + name + " not declared.");
             }
 
-            // 4. FIXED LINE: Pass the clean abstract VarID to IdExp instead of the string!
             return new IdExp(varId);
         } else if (lexer.token.kind == TokenKind.NUM) {
-            int value = (Integer) lexer.token.value;
+            int value = (Integer) lexer.token.val;
             lexer.match(TokenKind.NUM);
             return new NumExp(value);
         } else if (lexer.token.kind == TokenKind.LPAREN) {

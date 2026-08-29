@@ -1,15 +1,15 @@
-final class OpExp extends Exp {
+class OpExp extends Exp {
     static final int PLUS = 1;
     static final int TIMES = 2;
 
     final Exp left;
     final Exp right;
-    final int operator;
+    final int op;
 
-    OpExp(Exp left, int operator, Exp right) {
-        this.left = left;
-        this.operator = operator;
-        this.right = right;
+    public OpExp(Exp l, int o, Exp r) {
+        this.left = l;
+        this.op = o;
+        this.right = r;
     }
 
     @Override

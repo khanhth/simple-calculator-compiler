@@ -17,7 +17,7 @@ class CodeGenerator implements ASTVisitor<String, BackendMemoryLayout> {
     @Override
     public String visit(NumExp n, BackendMemoryLayout layout) {
         String reg = nextRegister();
-        System.out.println("LOADI " + reg + ", " + n.value);
+        System.out.println("LOADI " + reg + ", " + n.val);
         return reg;
     }
 
@@ -39,7 +39,7 @@ class CodeGenerator implements ASTVisitor<String, BackendMemoryLayout> {
         String rightReg = op.right.accept(this, layout);
 
         String resultReg = nextRegister();
-        String inst = (op.operator == OpExp.PLUS) ? "ADD   " : "MUL   ";
+        String inst = (op.op == OpExp.PLUS) ? "ADD   " : "MUL   ";
         System.out.println(inst + resultReg + ", " + leftReg + ", " + rightReg);
         return resultReg;
     }

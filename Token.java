@@ -1,16 +1,16 @@
 // ============================================================================
-// 1. TOKENS & LEXER IMPLEMENTATION (Lexical Analysis)
-// =======================================================================
+// 1. DATA INFRASTRUCTURE & TOKENS (Lexical Analysis)
+// ============================================================================
 enum TokenKind {
-    ID, NUM, PLUS, TIMES, LPAREN, RPAREN, EOF
+    ID, NUM, PLUS, TIMES, LPAREN, RPAREN, EOF, INT, SEMI
 }
 
-final class Token {
+class Token {
     final TokenKind kind;
-    final Object value;
+    final Object val;
 
-    Token(TokenKind kind, Object value) {
-        this.kind = kind;
-        this.value = value;
+    Token(TokenKind k, Object v) {
+        this.kind = k;
+        this.val = v;
     }
 }

@@ -21,9 +21,10 @@ class FrontendSymbolTable {
     }
 
     public String getTypeOf(VarID varId) {
-        if (!typeMap.containsKey(varId)) {
-            throw new RuntimeException("Compiler Internal Error: VarID " + varId + " missing type metadata.");
-        }
+        // TODO: Check if we'd better uncomment the below check.
+        // if (!typeMap.containsKey(varId)) {
+        //     throw new RuntimeException("Compiler Internal Error: VarID " + varId + " missing type metadata.");
+        // }
         return typeMap.get(varId);
     }
 

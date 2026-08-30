@@ -1,8 +1,8 @@
 // ============================================================================
-// 1. DATA INFRASTRUCTURE & TOKENS (Lexical Analysis)
+// 1. DATA INFRASTRUCTURE & TOKENS (Lexical Infrastructure)
 // ============================================================================
 enum TokenKind {
-    ID, NUM, PLUS, TIMES, LPAREN, RPAREN, EOF, INT, SEMI
+    ID, NUM, PLUS, MINUS, TIMES, LPAREN, RPAREN, EOF, INT, SEMI, ASSIGN_OP
 }
 
 class Token {

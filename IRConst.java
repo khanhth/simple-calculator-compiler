@@ -1,3 +1,6 @@
+// ============================================================================
+// (Relating to) THREE-ADDRESS CODE (3AC) INTERMEDIATE REPRESENTATION STRUCTURES
+// ============================================================================
 
 class IRConst extends IROperand {
     final int value;

@@ -1,5 +1,5 @@
 // ============================================================================
-// 3. GENERIC VISITOR PATTERN INTERFACE
+// 4. ABSTRACT SYNTAX TREE (AST) NODE DEFINITIONS & ABSTRACT VISITORS
 // ============================================================================
 // R = Return type of the visit operation
 // C = Context state type passed down the traversal path

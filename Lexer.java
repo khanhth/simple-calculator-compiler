@@ -1,3 +1,6 @@
+// ============================================================================
+// 2. THE LEXER (With Semicolon, Assignment Op, and Lookahead Peek)
+// ============================================================================
 class Lexer {
     private final String input;
     private int position = 0;
@@ -9,7 +12,7 @@ class Lexer {
     }
 
     // Read the next character in the stream
-    private char peek() {
+    private char peekChar() {
         if (position >= input.length()) {
             return '\0';
         }
@@ -23,11 +26,11 @@ class Lexer {
 
     // Core method: Scans the string to construct the next Token object
     public void advance() {
-        while (peek() != '\0' && Character.isWhitespace(peek())) {
+        while (peekChar() != '\0' && Character.isWhitespace(peekChar())) {
             consumeChar(); // Skip whitespace spaces, tabs, and newlines
         }
 
-        char current = peek();
+        char current = peekChar();
 
         // Base case: Reached the end of the input string
         if (current == '\0') {
@@ -62,23 +65,27 @@ class Lexer {
             return;
         } // Semicolon support
 
-        // 2. Lexing NUM Tokens (Digits)
+        if (current == '=') {
+            consumeChar();
+            token = new Token(TokenKind.ASSIGN_OP, null);
+            return;
+        } // Assignment operator support
+
         if (Character.isDigit(current)) {
             StringBuilder buffer = new StringBuilder();
-            while (Character.isDigit(peek())) {
-                buffer.append(peek());
+            while (Character.isDigit(peekChar())) {
+                buffer.append(peekChar());
                 consumeChar();
             }
-            int integerValue = Integer.parseInt(buffer.toString());
-            token = new Token(TokenKind.NUM, integerValue); // Carrying integer value
+            token = new Token(TokenKind.NUM, Integer.parseInt(buffer.toString()));
             return;
         }
 
         // 3. Lexing ID Tokens (Letters/Variable Names)
         if (Character.isLetter(current)) {
             StringBuilder buffer = new StringBuilder();
-            while (Character.isLetterOrDigit(peek())) {
-                buffer.append(peek());
+            while (Character.isLetterOrDigit(peekChar())) {
+                buffer.append(peekChar());
                 consumeChar();
             }
             String lexeme = buffer.toString();
@@ -90,15 +97,29 @@ class Lexer {
                 token = new Token(TokenKind.ID, lexeme); // Generic variable name
             }
             // TODO:
-            // Check the else branch for other cases where the lexeme is not "int" but also not a variable name.
-            // For example, if the lexeme is a reserved keyword like "if" or "while", we should handle those cases as well.
+            // Check the else branch for other cases where the lexeme is not "int" but also
+            // not a variable name.
+            // For example, if the lexeme is a reserved keyword like "if" or "while", we
+            // should handle those cases as well.
             return;
         }
 
         throw new RuntimeException("Lexical Error: Unknown character '" + current + "' at index " + position);
     }
 
-    // Matches the current token kind and advances the stream
+    // MODERN FIX: Simple lookahead peek to determine if an '=' follows an
+    // identifier name
+    public TokenKind peekNextTokenKind() {
+        int savedPosition = this.position;
+        while (savedPosition < input.length() && Character.isWhitespace(input.charAt(savedPosition))) {
+            savedPosition++;
+        }
+        if (savedPosition < input.length() && input.charAt(savedPosition) == '=') {
+            return TokenKind.ASSIGN_OP;
+        }
+        return TokenKind.EOF;
+    }
+
     public void match(TokenKind expected) {
         if (token.kind == expected) {
             advance();

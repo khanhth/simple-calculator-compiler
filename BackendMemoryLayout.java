@@ -2,6 +2,9 @@
 import java.util.HashMap;
 import java.util.Map;
 
+// ============================================================================
+// 7. BACKEND SYNTHESIS: TRACK MEMORY CONFIGURATION & ASSEMBLY CODEGENERATOR
+// ============================================================================
 class BackendMemoryLayout {
     private final Map<Integer, Integer> stackOffsets = new HashMap<>();
     private int frameOffset = -4;

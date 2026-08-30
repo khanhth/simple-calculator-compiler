@@ -1,3 +1,7 @@
+// ============================================================================
+// (Relating to) THREE-ADDRESS CODE (3AC) INTERMEDIATE REPRESENTATION STRUCTURES
+// ============================================================================
+
 class IRVar extends IROperand {
     final VarID varId;
 

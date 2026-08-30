@@ -1,5 +1,6 @@
 // ============================================================================
-// 2. MODERN COMPILER CONTEXT & SYMBOL MANAGERS
+// MODERN COMPILER CONTEXT & SYMBOL MANAGERS
+// (Part of) CENTRALIZED UNIFIED COMPILER CONTEXT FRAMEWORK
 // ============================================================================
 public class CompilerContext {
     private final FrontendSymbolTable symbolTable;

@@ -5,48 +5,56 @@
 // Return type is Void (prints directly), Context type is PrintContext
 class ASTPrinter implements ASTVisitor<Void, PrintContext> {
 
-    public void print(Exp exp) {
-        // TODO: KTR to check why `isLast` is set to true here, see commented code below
-        // exp.accept(this, new PrintContext(""));
-
-        // Start traversal with an initial stack-allocated context frame
-        exp.accept(this, new PrintContext("", true));
+    // ─── NEW ENHANCED PROGRAM LAUNCHER ───
+    public void print(ProgramNode program) {
+        System.out.println("ProgramNode");
+        int size = program.statements.size();
+        for (int i = 0; i < size; i++) {
+            Statement stmt = program.statements.get(i);
+            boolean isLastStmt = (i == size - 1);
+            printStatement(stmt, "├── ", isLastStmt ? "    " : "│   ");
+        }
     }
 
+    private void printStatement(Statement stmt, String prefix, String childIndent) {
+        if (stmt instanceof AssignStmt) {
+            AssignStmt assign = (AssignStmt) stmt;
+            System.out.println(prefix + "AssignStmt (=)");
+            System.out.println(childIndent + "├── VarID (" + assign.varId + ")");
+            System.out.print(childIndent + "└── ");
+            // Delegate the expression to the visitor double-dispatch pattern
+            assign.valueExpr.accept(this, new PrintContext(childIndent + "    "));
+        } else if (stmt instanceof ExprStmt) {
+            ExprStmt exprStmt = (ExprStmt) stmt;
+            System.out.println(prefix + "ExprStmt");
+            System.out.print(childIndent + "└── ");
+            exprStmt.expression.accept(this, new PrintContext(childIndent + "    "));
+        }
+    }
+
+    // ─── UNCHANGED STRUCTURAL EXPRESSION VISITORS ───
     @Override
     public Void visit(NumExp n, PrintContext ctx) {
-        // TODO: KTR to check what happens if we remove `ctx.indent` here, see commented
-        // code below
-
-        // System.out.println("NUM (" + n.val + ")");
-        System.out.println(ctx.indent + "NUM (" + n.val + ")");
+        System.out.println("NUM (" + n.val + ")");
         return null;
     }
 
     @Override
     public Void visit(IdExp id, PrintContext ctx) {
-        // TODO: KTR to check what happens if we remove `ctx.indent` here, see commented code below
-        // System.out.println("\"" + id.varId + "\"");
-
-        // Prints out the abstract variable tag, like: ID (%v0)
-        System.out.println(ctx.indent + "ID (" + id.varId + ")");
+        System.out.println("ID (" + id.varId + ")");
         return null;
     }
 
     @Override
     public Void visit(OpExp op, PrintContext ctx) {
-        // 1. Print the current node using its own pre-calculated indent and branch
-        // symbol
-        System.out.println(ctx.indent + "OP (" + ((op.op == OpExp.PLUS) ? "PLUS (+)" : "TIMES (*)") + ")");
+        String opSymbol = (op.op == OpExp.PLUS) ? "PLUS (+)" : "TIMES (*)";
+        System.out.println("OP (" + opSymbol + ")");
 
-        // 2. Derive the correct prefix line for our children based on whether we are
-        // last or not
-        String childPrefix = ctx.indent + (ctx.isLast ? "    " : "│   ");
+        System.out.print(ctx.indent + "├── ");
+        op.left.accept(this, new PrintContext(ctx.indent + "│   "));
 
-        // 3. Explicitly construct the exact visual path for the left and right child
-        // nodes
-        op.left.accept(this, new PrintContext(childPrefix + "├── ", false));
-        op.right.accept(this, new PrintContext(childPrefix + "└── ", true));
+        System.out.print(ctx.indent + "└── ");
+        op.right.accept(this, new PrintContext(ctx.indent + "    "));
         return null;
     }
 }

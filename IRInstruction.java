@@ -1,10 +1,17 @@
+// ============================================================================
+// (Relating to) THREE-ADDRESS CODE (3AC) INTERMEDIATE REPRESENTATION STRUCTURES
+// ============================================================================
+
 class IRInstruction {
+    // MODERN FIX: Explicit Enum Configuration for ASSIGN, ADD, and MUL operators
     enum Op {
-        ADD, MUL
+        ASSIGN, ADD, MUL
     }
 
     final Op op;
-    final IROperand target, left, right;
+    final IROperand target;
+    final IROperand left;
+    final IROperand right;
 
     IRInstruction(Op op, IROperand target, IROperand left, IROperand right) {
         this.op = op;
@@ -15,7 +22,15 @@ class IRInstruction {
 
     @Override
     public String toString() {
-        String sym = (op == Op.ADD) ? "+" : "*";
-        return target + " = " + left + " " + sym + " " + right;
+        switch (op) {
+            case ASSIGN:
+                return target + " = " + left;
+            case ADD:
+                return target + " = " + left + " + " + right;
+            case MUL:
+                return target + " = " + left + " * " + right;
+            default:
+                return "";
+        }
     }
 }

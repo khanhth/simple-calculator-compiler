@@ -28,25 +28,46 @@ class ASTParser {
         this.context = context;
     }
 
+    // Parsing Entry Point Supporting Sequential Statement Operations
     public ProgramNode parseProgram() {
-        ProgramNode program = new ProgramNode(null);
+        ProgramNode program = new ProgramNode();
 
-        // Parse list of variable declarations separated by semicolons: int x; int y;
+        // 1. Structural Declarations Loop
         while (lexer.token.kind == TokenKind.INT) {
             lexer.match(TokenKind.INT);
-            String name = (String) lexer.token.val;
+            String varName = (String) lexer.token.val;
             lexer.match(TokenKind.ID);
             lexer.match(TokenKind.SEMI); // Consume semicolon anchor
 
-            context.registerVariable(name, "int"); // Auto-register
-            program.declarations.add(new VarDeclStmt(name, "int"));
+            context.registerVariable(varName, "int");
         }
 
-        // Drop into main math expression
-        Exp mathExpression = E();
-        lexer.match(TokenKind.EOF);
+        // 2. Sequential Statement Operations Loop
+        while (lexer.token.kind != TokenKind.EOF) {
 
-        return new ProgramNode(mathExpression);
+            // Scenario A: It's an assignment statement (e.g., x = 5;)
+            if (lexer.token.kind == TokenKind.ID && lexer.peekNextTokenKind() == TokenKind.ASSIGN_OP) {
+                String varName = (String) lexer.token.val;
+                lexer.match(TokenKind.ID);
+                lexer.match(TokenKind.ASSIGN_OP); // Match '='
+
+                Exp value = E(); // Parse the value expression on the right
+                lexer.match(TokenKind.SEMI);
+
+                VarID id = context.getSymbolTable().lookup(varName);
+                program.statements.add(new AssignStmt(id, value));
+            }
+            // Scenario B: It's a plain math expression evaluated for output (e.g., x + 3;)
+            else {
+                // TODO: Add validation to ensure that the expression is not empty and is well-formed
+                Exp expr = E();
+                lexer.match(TokenKind.SEMI);
+                program.statements.add(new ExprStmt(expr));
+            }
+        }
+
+        lexer.match(TokenKind.EOF);
+        return program;
     }
 
     private Exp E() {
@@ -57,6 +78,9 @@ class ASTParser {
         if (lexer.token.kind == TokenKind.PLUS) {
             lexer.match(TokenKind.PLUS);
             return Eprime(new OpExp(a, OpExp.PLUS, T())); // Structural left-associative binding
+        } else if (lexer.token.kind == TokenKind.MINUS) {
+            lexer.match(TokenKind.MINUS);
+            return Eprime(new OpExp(a, OpExp.MINUS, T())); // Structural left-associative binding
         }
         return a;
     }
@@ -70,6 +94,10 @@ class ASTParser {
             lexer.match(TokenKind.TIMES);
             return Tprime(new OpExp(a, OpExp.TIMES, F())); // Structural left-associative binding
         }
+        // else if (lexer.token.kind == TokenKind.DIV) {
+        //     lexer.match(TokenKind.DIV);
+        //     return Tprime(new OpExp(a, OpExp.DIV, F())); // Structural left-associative binding
+        // }
         return a;
     }
 
@@ -78,11 +106,11 @@ class ASTParser {
             String name = (String) lexer.token.val;
             lexer.match(TokenKind.ID);
             VarID varId = context.getSymbolTable().lookup(name);
-            if (varId == null) {
-                throw new RuntimeException("Compile Error: Variable '" + name + "' used before declaration.");
-                // if you want it to fail for undeclared variables here instead:
-                // throw new RuntimeException("Compile Error: var. " + name + " not declared.");
-            }
+            // if (varId == null) {
+            //     throw new RuntimeException("Compile Error: Variable '" + name + "' used before declaration.");
+            //     // if you want it to fail for undeclared variables here instead:
+            //     // throw new RuntimeException("Compile Error: var. " + name + " not declared.");
+            // }
 
             return new IdExp(varId);
         } else if (lexer.token.kind == TokenKind.NUM) {

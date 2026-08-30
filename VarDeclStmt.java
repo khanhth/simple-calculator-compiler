@@ -1,5 +1,9 @@
+// ============================================================================
+// (Relating to the Visitor Pattern)
+// ============================================================================
+
 // High-Level Program structures
-class VarDeclStmt {
+class VarDeclStmt extends Statement {
     final String varName;
     final String type;
 

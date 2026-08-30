@@ -1,5 +1,8 @@
 import java.util.HashMap;
 import java.util.Map;
+// ============================================================================
+// 3. CENTRALIZED UNIFIED COMPILER CONTEXT FRAMEWORK
+// ============================================================================
 
 class FrontendSymbolTable {
     private final Map<String, VarID> idMap = new HashMap<>();

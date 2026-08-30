@@ -1,6 +1,11 @@
+// ============================================================================
+// (Relating to the Visitor Pattern)
+// ============================================================================
+
 class OpExp extends Exp {
     static final int PLUS = 1;
-    static final int TIMES = 2;
+    static final int MINUS = 2;
+    static final int TIMES = 3;
 
     final Exp left;
     final Exp right;

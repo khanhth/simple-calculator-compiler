@@ -1,7 +1,6 @@
 // ============================================================================
-// ABSTRACT SYNTAX TREE (AST) *CLASSES* or *NODE DEFINITIONS* (With Double Dispatch Support)
 // (Relating to the Visitor Pattern)
 // ============================================================================
-abstract class Exp {
-    public abstract <R, C> R accept(ASTVisitor<R, C> v, C context);
+
+abstract class Statement {
 }

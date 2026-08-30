@@ -1,46 +1,78 @@
 // ============================================================================
-// 8. VISITOR 3 IMPLEMENTATION: TARGET CODE GENERATOR (Synthesis Phase)
+// VISITOR 3 IMPLEMENTATION: TARGET CODE GENERATOR (Synthesis Phase)
+// (Relating to) BACKEND SYNTHESIS: TRACK MEMORY CONFIGURATION & ASSEMBLY CODEGENERATOR
 // ============================================================================
 
 // NOTE on class header: Return type is `String` (Register Name), Context type is `Void` (No state needed)
-class CodeGenerator implements ASTVisitor<String, BackendMemoryLayout> {
-    private int registerCount = 0;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    private String nextRegister() {
-        return "r" + (registerCount++);
+class CodeGenerator {
+    private int hardwareRegisterCount = 0;
+
+    // Maps abstract IRTemp operands (like t0) to active hardware scratch registers
+    // (like r0)
+    private final Map<String, String> tempRegisterMap = new HashMap<>();
+
+    // Allocates the next physical hardware register handle
+    private String allocateRegister() {
+        return "r" + (hardwareRegisterCount++);
     }
 
-    public void compile(Exp exp, BackendMemoryLayout layout) {
-        exp.accept(this, layout);
+    // Resolves any abstract IROperand into a readable physical string location
+    private String resolveOperand(IROperand op, BackendMemoryLayout layout) {
+        if (op instanceof IRConst)
+            return String.valueOf(((IRConst) op).value);
+        if (op instanceof IRVar)
+            return "[fp + " + layout.getOrAllocateOffset(((IRVar) op).varId) + "]";
+        if (op instanceof IRTemp) {
+            String key = op.toString();
+            if (!tempRegisterMap.containsKey(key))
+                tempRegisterMap.put(key, allocateRegister());
+            return tempRegisterMap.get(key);
+        }
+        throw new IllegalArgumentException("Unknown IR Operand Type");
     }
 
-    @Override
-    public String visit(NumExp n, BackendMemoryLayout layout) {
-        String reg = nextRegister();
-        System.out.println("LOADI " + reg + ", " + n.val);
-        return reg;
-    }
+    // ─── THE NEW FLAT BACKEND EMISSION LOOP ───
+    // Backend sequential code emitter running over the flat 3AC intermediate list
+    public void compile(List<IRInstruction> intermediateCode, BackendMemoryLayout layout) {
+        for (IRInstruction inst : intermediateCode) {
 
-    @Override
-    public String visit(IdExp id, BackendMemoryLayout layout) {
-        String reg = nextRegister();
-        // The backend reads its own layout map using the abstract ID handle
-        int offset = layout.getOrAllocateOffset(id.varId);
-        System.out.println("LOAD  " + reg + ", [fp + " + offset + "]  ; Loaded " + id.varId);
-        return reg;
-    }
+            // Step A: Resolve the destination target register
+            String targetReg = resolveOperand(inst.target, layout);
 
-    @Override
-    public String visit(OpExp op, BackendMemoryLayout layout) {
-        // Crucial: Pass 'layout' instead of 'null' so child identifiers can read memory
-        // offsets
-        // Evaluate child branches recursively using double-dispatch
-        String leftReg = op.left.accept(this, layout);
-        String rightReg = op.right.accept(this, layout);
+            // Step B: Resolve the left-hand source operand location
+            String leftSrc = resolveOperand(inst.left, layout);
 
-        String resultReg = nextRegister();
-        String inst = (op.op == OpExp.PLUS) ? "ADD   " : "MUL   ";
-        System.out.println(inst + resultReg + ", " + leftReg + ", " + rightReg);
-        return resultReg;
+            // Step C: Emit targeted instructions based on the operation type
+            if (inst.op == IRInstruction.Op.ASSIGN) {
+                // If it's a direct load or literal assignment
+                System.out.println("LOAD   " + targetReg + ", " + leftSrc);
+            } else {
+                // It's a binary operation. Resolve the right-hand source operand
+                String rightSrc = resolveOperand(inst.right, layout);
+
+                // If the left operand is sitting out in RAM stack space, load it into a
+                // temporary register first
+                if (leftSrc.startsWith("[")) {
+                    String scratch = allocateRegister();
+                    System.out.println("LOAD   " + scratch + ", " + leftSrc);
+                    leftSrc = scratch;
+                }
+
+                // If the right operand is sitting out in RAM stack space, load it too
+                if (rightSrc.startsWith("[")) {
+                    String scratch = allocateRegister();
+                    System.out.println("LOAD   " + scratch + ", " + rightSrc);
+                    rightSrc = scratch;
+                }
+
+                // Emit the arithmetic operational assembly code
+                String mnemonic = (inst.op == IRInstruction.Op.ADD) ? "ADD    " : "MUL    ";
+                System.out.println(mnemonic + targetReg + ", " + leftSrc + ", " + rightSrc);
+            }
+        }
     }
 }

@@ -1,8 +1,12 @@
+// ============================================================================
+// (Relating to the Visitor Pattern)
+// ============================================================================
+
 class IdExp extends Exp {
     public final VarID varId; // Pure abstract reference handle
 
-    public IdExp(VarID id) {
-        this.varId = id;
+    public IdExp(VarID varId) {
+        this.varId = varId;
     }
 
     @Override

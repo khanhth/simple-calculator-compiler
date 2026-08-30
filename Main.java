@@ -30,5 +30,24 @@ public class Main {
             System.out.println(" " + inst);
         }
         System.out.println("\n🎉 COMPILATION SUCCESSFUL: IR generation complete!");
+
+        // TODO: Analyze commented-out code below
+        // // 3. Structural Validation (Type Checker)
+        // System.out.println("[Step 3] Running Type Checker Validation...");
+        // TypeChecker checker = new TypeChecker();
+        // TypeContext typeState = new TypeContext(context); // Binds the session context to semantic pass
+        // DataType finalType = checker.check(astRoot, typeState);
+
+        // if (finalType == DataType.ERROR) {
+        //     System.out.println("🛑 COMPILATION HALTED: Semantic validation failed.");
+        //     return;
+        // }
+        // System.out.println("👉 Semantic Analysis Clean.");
+
+        // // 4. Backend Lowering
+        // System.out.println("[Step 4] Lowering to Target Hardware Assembly:");
+        // BackendMemoryLayout hardwareLayout = new BackendMemoryLayout();
+        // CodeGenerator codegen = new CodeGenerator();
+        // codegen.compile(astRoot, hardwareLayout);
     }
 }

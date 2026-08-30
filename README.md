@@ -25,5 +25,6 @@
 [-] 3. Examine the relationship between the enviroment (variable context) class and the address table class.
 [-] 4. Examine the manually passing frontendTable code in `Main.java`, i.e. `ASTParser parser = new ASTParser(lexer, frontendTable); // Passed frontendTable here`.
 [-] 5. [Checkpoint] Audit the TypeChecker's ability to enforce strict type compliance calculations on the nodes.
-[-] 6. Propose how to refactor your CodeGenerator to accept this list of IRInstruction objects and map them to physical assembly instructions.
+[-] 6. Refactor your CodeGenerator to accept this list of IRInstruction objects and map them to physical assembly instructions.
 [-] 7. Introduce an Optimization Pass Visitor that analyzes this flat 3AC stream to prune dead code or run calculations ahead of time.
+[-] 7*. Add an Optimizer step that reads the flat 3-Address Code stream to run evaluations ahead of time before compiling finishes.

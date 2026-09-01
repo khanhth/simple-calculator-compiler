@@ -1,7 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class IROptimizer {
     // Tracks which abstract operands have been reduced to known literal integers
@@ -65,4 +67,67 @@ class IROptimizer {
         }
         return optimizedIR;
     }
+
+    // ─── NEW OPTIMIZATION PASS: DEAD CODE ELIMINATION ───
+    public List<IRInstruction> eliminateDeadCode(List<IRInstruction> intermediateCode) {
+        // Tracks symbols that are still needed by operations downstream
+        Set<String> liveSymbols = new HashSet<>();
+        List<IRInstruction> prunedIR = new ArrayList<>();
+
+        // Phase A: Seed the analysis backwards.
+        // The final statement/expression in the stream computes the critical final result.
+        // We find the last expression instruction and mark its components alive.
+        boolean foundRootExpression = false;
+        for (int i = intermediateCode.size() - 1; i >= 0; i--) {
+            IRInstruction inst = intermediateCode.get(i);
+            // In our language, an ExprStmt or the final temp register (e.g., t1) holds the output
+            if (!foundRootExpression && inst.target instanceof IRTemp) {
+                liveSymbols.add(inst.target.toString());
+                foundRootExpression = true;
+                break;
+            }
+        }
+
+        // Standard fallback: If it's a simple program with just user assignments,
+        // keep variables alive by default so we don't accidentally erase variables the user explicitly set.
+        if (liveSymbols.isEmpty()) {
+            for (IRInstruction inst : intermediateCode) {
+                if (inst.target instanceof IRVar) liveSymbols.add(inst.target.toString());
+            }
+        }
+
+        // Phase B: Scan backward from the bottom instruction to the top
+        for (int i = intermediateCode.size() - 1; i >= 0; i--) {
+            IRInstruction inst = intermediateCode.get(i);
+            String targetKey = inst.target.toString();
+
+            // 1. CRITICAL GUARD: User variable assignments (like %v0 = 5) should stay
+            // unless we have an aggressive tracking system for variables. For safety, we keep all IRVar targets alive.
+            boolean isUserVariable = (inst.target instanceof IRVar);
+
+            // 2. CHECK ALIVE STATUS:
+            if (liveSymbols.contains(targetKey) || isUserVariable) {
+                // The instruction is ALIVE. Keep it.
+                prunedIR.add(0, inst); // Insert at the front to maintain correct chronological order
+
+                // Update Liveness: The target is now defined (dead upwards), but its inputs become live
+                if (!isUserVariable) {
+                    liveSymbols.remove(targetKey);
+                }
+
+                if (inst.left != null && !(inst.left instanceof IRConst)) {
+                    liveSymbols.add(inst.left.toString());
+                }
+                if (inst.right != null && !(inst.right instanceof IRConst)) {
+                    liveSymbols.add(inst.right.toString());
+                }
+            } else {
+                // The instruction is DEAD! Drop it completely.
+                System.out.println("   ✂️ Eliminated Dead Code: " + inst);
+            }
+        }
+
+        return prunedIR;
+    }
+
 }

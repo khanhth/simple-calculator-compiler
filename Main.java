@@ -1,8 +1,7 @@
 public class Main {
     public static void main(String[] args) {
-        // Input text containing equations that can be pre-calculated: e.g., 5 * 3 + y
         String sourceCode = "int x; int y; x = 5; y = 10; 5 * 3 + y;";
-        System.out.println("--- Starting Modern Optimizing Compiler Pipeline ---\n");
+        System.out.println("--- Starting Advanced Optimizing Compiler Pipeline ---\n");
 
         CompilerContext context = new CompilerContext();
         Lexer lexer = new Lexer(sourceCode);
@@ -12,33 +11,30 @@ public class Main {
         System.out.println("[Phase 1] Processing source text definitions...");
         new ASTPrinter().print(programTree); // Visualize the AST structure
 
-        // 1. Generate Raw IR
+        // Step 1: Generate Raw Middle-End IR
         IRGenerator irGen = new IRGenerator();
-        java.util.List<IRInstruction> rawIR = irGen.generate(programTree);
+        java.util.List<IRInstruction> currentIR = irGen.generate(programTree);
 
-        System.out.println("[Phase 2] Original Generated IR Stream:");
-        for (IRInstruction inst : rawIR) {
-            System.out.println("   " + inst);
-        }
-
-        // 2. NEW PASS: Run Middle-End Optimization Code
-        System.out.println("\n[Phase 2.5] Running Constant Folding Optimization Pass...");
+        // Step 2: Optimization Pass #1 ── Constant Folding
+        System.out.println("[Middle-End] Running Constant Folding Pass...");
         IROptimizer optimizer = new IROptimizer();
-        java.util.List<IRInstruction> optimizedIR = optimizer.optimize(rawIR);
+        currentIR = optimizer.optimize(currentIR); // Folds math into static literals
 
-        System.out.println("\n[Phase 2.6] Optimized IR Stream:");
-        for (IRInstruction inst : optimizedIR) {
+        // Step 3: Optimization Pass #2 ── Dead Code Elimination
+        System.out.println("\n[Middle-End] Running Dead Code Elimination Pass...");
+        currentIR = optimizer.eliminateDeadCode(currentIR); // Trims unused nodes
+
+        System.out.println("\n[Phase 2] Fully Optimized Final IR Stream:");
+        for (IRInstruction inst : currentIR) {
             System.out.println("   " + inst);
         }
 
-        // 3. Compile Backend from the Optimized Stream!
-        System.out.println("\n[Phase 3] Generated Hardware Assembly Code (Optimized Backend):");
+        // Step 4: Emit Highly Efficient Assembly Code
+        System.out.println("\n[Phase 3] Emitting Hardware Assembly Code:");
         BackendMemoryLayout hardwareLayout = new BackendMemoryLayout();
         CodeGenerator backend = new CodeGenerator();
+        backend.compile(currentIR, hardwareLayout);
 
-        // Pass the optimizedIR list downstream instead of rawIR!
-        backend.compile(optimizedIR, hardwareLayout);
-
-        System.out.println("\n🎉 OPTIMIZING COMPILATION PIPELINE SUCCESSFUL.");
+        System.out.println("\n🎉 DUAL-PASS OPTIMIZATION PIPELINE SUCCESSFUL.");
     }
 }

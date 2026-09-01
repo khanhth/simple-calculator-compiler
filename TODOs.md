@@ -33,3 +33,7 @@
 [-] 11. Add Conditional Statements (like an if statement block) to the 3AC stream using branch labels.
 [-] 12. Add an Optimization Pass class that scans your java.util.List<IRInstruction> stream to perform calculation optimizations (like constant folding) before the final assembly is printed.
 [-] 13. Add Conditional Statements (like an if statement block) to the 3AC stream using branch labels.
+[-] 14. Verify the following statements:
+Why Constant Folding optimization is a Massive Backend Performance WinLook at the emitted assembly language instructions:
+- Without the Optimizer: Your CPU would have to fetch the variable, move it to a hardware scratch register, invoke a costly physical MUL clock-cycle hardware command, and then call an ADD instruction command.
+- With the Optimizer: The math commands completely disappear from the hardware code layout. The backend simply emits static loads (LOAD r1, 25), completely eliminating math computation latency at runtime.

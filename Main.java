@@ -1,34 +1,44 @@
 public class Main {
     public static void main(String[] args) {
-        // The source code file can now change variables dynamically mid-flight!
-        String sourceCode = "int x; int y; x = 5; y = 10; x * 3 + y;";
-        System.out.println("--- Starting Modern Unified Decoupled 3AC Compiler ---\n");
+        // Input text containing equations that can be pre-calculated: e.g., 5 * 3 + y
+        String sourceCode = "int x; int y; x = 5; y = 10; 5 * 3 + y;";
+        System.out.println("--- Starting Modern Optimizing Compiler Pipeline ---\n");
 
         CompilerContext context = new CompilerContext();
         Lexer lexer = new Lexer(sourceCode);
         ASTParser parser = new ASTParser(lexer, context);
-
-        System.out.println("[Phase 1] Processing source text definitions...");
         ProgramNode programTree = parser.parseProgram();
 
-        // TODO: Add implementation for ASTPrinter to visualize the AST structure
+        System.out.println("[Phase 1] Processing source text definitions...");
         new ASTPrinter().print(programTree); // Visualize the AST structure
 
-        // Generate IR from the entire program node statements sequence
-        System.out.println("\n[Phase 2] Generated 3-Address Code (IR Stream List):");
+        // 1. Generate Raw IR
         IRGenerator irGen = new IRGenerator();
-        // FIXED LINE: Explicitly use java.util.List here
-        java.util.List<IRInstruction> flatIR = irGen.generate(programTree);
-        for (IRInstruction inst : flatIR) {
+        java.util.List<IRInstruction> rawIR = irGen.generate(programTree);
+
+        System.out.println("[Phase 2] Original Generated IR Stream:");
+        for (IRInstruction inst : rawIR) {
             System.out.println("   " + inst);
         }
 
-        System.out.println("\n[Phase 3] Generated Physical Hardware Assembly Code:");
+        // 2. NEW PASS: Run Middle-End Optimization Code
+        System.out.println("\n[Phase 2.5] Running Constant Folding Optimization Pass...");
+        IROptimizer optimizer = new IROptimizer();
+        java.util.List<IRInstruction> optimizedIR = optimizer.optimize(rawIR);
+
+        System.out.println("\n[Phase 2.6] Optimized IR Stream:");
+        for (IRInstruction inst : optimizedIR) {
+            System.out.println("   " + inst);
+        }
+
+        // 3. Compile Backend from the Optimized Stream!
+        System.out.println("\n[Phase 3] Generated Hardware Assembly Code (Optimized Backend):");
         BackendMemoryLayout hardwareLayout = new BackendMemoryLayout();
         CodeGenerator backend = new CodeGenerator();
-        backend.compile(flatIR, hardwareLayout);
 
-        System.out.println("\n🎉 COMPILATION PIPELINE SUCCESSFUL.");
+        // Pass the optimizedIR list downstream instead of rawIR!
+        backend.compile(optimizedIR, hardwareLayout);
+
+        System.out.println("\n🎉 OPTIMIZING COMPILATION PIPELINE SUCCESSFUL.");
     }
-
 }

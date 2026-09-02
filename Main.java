@@ -1,7 +1,11 @@
 public class Main {
     public static void main(String[] args) {
-        String sourceCode = "int x; int y; x = 5; y = 10; 5 * 3 + y;";
+        // String sourceCode = "int x; int y; x = 5; y = 10; 5 * 3 + y;";
+        // String sourceCode = "int x; x = 2222; 10 * 20;";
+        // String sourceCode = "int x; int y; x = 5 * 3 + 2; 10 * 20; y = x +1; ";
+        String sourceCode = "int x; x = 5 * 3 + 2; 10 * 20;";
         System.out.println("--- Starting Advanced Optimizing Compiler Pipeline ---\n");
+        System.out.println("--- Source code: =>     " + sourceCode + "\n");
 
         CompilerContext context = new CompilerContext();
         Lexer lexer = new Lexer(sourceCode);

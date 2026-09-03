@@ -54,4 +54,9 @@ class TypeChecker implements ASTVisitor<DataType, TypeContext> {
 
         return DataType.INT;
     }
+
+    @Override
+    public DataType visit(VarDeclStmt decl, TypeContext ctx) {
+        return null; // No register result for variable declarations
+    }
 }

@@ -5,11 +5,17 @@
 // Return type is Void (prints directly), Context type is PrintContext
 class ASTPrinter implements ASTVisitor<Void, PrintContext> {
 
-    public void print(Exp exp) {
-        // TODO: KTR to check why `isLast` is set to true here, see commented code below
-        // exp.accept(this, new PrintContext(""));
-
-        // Start traversal with an initial stack-allocated context frame
+    public void print(ProgramNode program) {
+        // Note: there's bug in the printer's output see example below
+        // OP (PLUS (+))
+        //     ├── OP (TIMES (*))
+        //     ├── │   ├── ID (%v0) <--- This is a bug, should not replay "├── │   " at the front with "│".
+        //     ├── │   └── NUM (3)  <--- also here
+        //     └── ID (%v1)
+        for (VarDeclStmt decl : program.declarations) {
+            decl.accept(this, new PrintContext("", true));
+        }
+        Exp exp = program.expression; // Start traversal with the main expression
         exp.accept(this, new PrintContext("", true));
     }
 
@@ -30,6 +36,12 @@ class ASTPrinter implements ASTVisitor<Void, PrintContext> {
 
         // Prints out the abstract variable tag, like: ID (%v0)
         System.out.println(ctx.indent + "ID (" + id.varId + ")");
+        return null;
+    }
+
+    @Override
+    public Void visit(VarDeclStmt decl, PrintContext ctx) {
+        System.out.println(ctx.indent + "VARDECL (" + decl.varName + ": " + decl.type + ")");
         return null;
     }
 

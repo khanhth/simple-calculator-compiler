@@ -29,7 +29,7 @@ class ASTParser {
     }
 
     public ProgramNode parseProgram() {
-        ProgramNode program = new ProgramNode(null);
+        ProgramNode program = new ProgramNode();
 
         // Parse list of variable declarations separated by semicolons: int x; int y;
         while (lexer.token.kind == TokenKind.INT) {
@@ -45,8 +45,9 @@ class ASTParser {
         // Drop into main math expression
         Exp mathExpression = E();
         lexer.match(TokenKind.EOF);
+        program.expression = mathExpression; // Assign the parsed expression to the program node
 
-        return new ProgramNode(mathExpression);
+        return program;
     }
 
     private Exp E() {

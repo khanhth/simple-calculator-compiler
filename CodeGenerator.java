@@ -43,4 +43,12 @@ class CodeGenerator implements ASTVisitor<String, BackendMemoryLayout> {
         System.out.println(inst + resultReg + ", " + leftReg + ", " + rightReg);
         return resultReg;
     }
+
+    @Override
+    public String visit(VarDeclStmt decl, BackendMemoryLayout layout) {
+        // Allocate a new memory slot for the variable in the backend layout
+        // int offset = layout.getOrAllocateOffset(decl.varName);
+        // System.out.println("; Variable " + decl.varName + " allocated at [fp + " + offset + "]");
+        return null; // No register result for variable declarations
+    }
 }

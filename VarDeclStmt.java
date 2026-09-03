@@ -7,4 +7,8 @@ class VarDeclStmt {
         this.varName = name;
         this.type = type;
     }
+
+    public <R, C> R accept(ASTVisitor<R, C> v, C context) {
+        return v.visit(this, context);
+    }
 }

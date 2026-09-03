@@ -10,4 +10,6 @@ interface ASTVisitor<R, C> {
     R visit(IdExp id, C context);
 
     R visit(OpExp op, C context);
+
+    R visit(VarDeclStmt decl, C context);
 }

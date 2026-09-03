@@ -7,6 +7,6 @@ class VarID {
 
     @Override
     public String toString() {
-        return "%v" + id;
+        return "%varID(" + id + ")";
     }
 }

@@ -8,8 +8,11 @@ class IRGenerator implements ASTVisitor<IROperand, Void> {
     private final List<IRInstruction> programIR = new ArrayList<>();
     private int tempCount = 0;
 
-    public List<IRInstruction> generate(Exp exp) {
-        exp.accept(this, null);
+    public List<IRInstruction> generate(ProgramNode prog) {
+        for (VarDeclStmt decl : prog.declarations) {
+            decl.accept(this, null); // Process variable declarations first
+        }
+        prog.expression.accept(this, null);
         return programIR;
     }
 
@@ -27,9 +30,16 @@ class IRGenerator implements ASTVisitor<IROperand, Void> {
     public IROperand visit(OpExp op, Void ctx) {
         IROperand leftOp = op.left.accept(this, null);
         IROperand rightOp = op.right.accept(this, null);
-        IRTemp targetTemp = new IRTemp(tempCount++);
+        IRTemp irTargetTemp = new IRTemp(tempCount++);
         IRInstruction.Op irOp = (op.op == OpExp.PLUS) ? IRInstruction.Op.ADD : IRInstruction.Op.MUL;
-        programIR.add(new IRInstruction(irOp, targetTemp, leftOp, rightOp));
-        return targetTemp;
+        programIR.add(new IRInstruction(irOp, irTargetTemp, leftOp, rightOp));
+        return irTargetTemp;
+    }
+
+    @Override
+    public IROperand visit(VarDeclStmt decl, Void ctx) {
+        IROperand irDeclVar = new IRVarDeclStmt(decl.varName, decl.type);
+        programIR.add(new IRInstruction(irDeclVar));
+        return irDeclVar;
     }
 }

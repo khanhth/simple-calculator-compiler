@@ -1,1 +1,2 @@
-abstract class IROperand {}
+abstract class IROperand {
+}

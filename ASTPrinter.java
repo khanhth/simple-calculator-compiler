@@ -17,7 +17,10 @@ class ASTPrinter implements ASTVisitor<Void, PrintContext> {
     }
 
     private void printStatement(Statement stmt, String prefix, String childIndent) {
-        if (stmt instanceof AssignStmt) {
+        if (stmt instanceof VarDeclStmt) {
+            VarDeclStmt decl = (VarDeclStmt) stmt;
+            System.out.println(prefix + "VarDeclStmt (" + decl.varID + ": " + decl.type + ")");
+        } else if (stmt instanceof AssignStmt) {
             AssignStmt assign = (AssignStmt) stmt;
             System.out.println(prefix + "AssignStmt (=)");
             System.out.println(childIndent + "├── VarID (" + assign.varId + ")");

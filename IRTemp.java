@@ -11,6 +11,6 @@ class IRTemp extends IROperand {
 
     @Override
     public String toString() {
-        return "t" + number;
+        return "temp" + number;
     }
 }

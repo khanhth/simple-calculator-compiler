@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 class IRGenerator {
-    private final List programIR = new ArrayList<>();
+    private final List<IRInstruction> programIR = new ArrayList<>();
     private int tempCount = 0;
 
     private IRTemp nextTemp() {
         return new IRTemp(tempCount++);
     }
 
-    public List generate(ProgramNode program) {
+    public List<IRInstruction> generate(ProgramNode program) {
         for (Statement stmt : program.statements) {
             if (stmt instanceof AssignStmt) {
                 AssignStmt assign = (AssignStmt) stmt;
@@ -24,6 +24,9 @@ class IRGenerator {
                 programIR.add(new IRInstruction(IRInstruction.Op.ASSIGN, new IRVar(assign.varId), sourceValue, null));
             } else if (stmt instanceof ExprStmt) {
                 lowerExpr(((ExprStmt) stmt).expression);
+            } else if (stmt instanceof VarDeclStmt) {
+                IROperand irDeclVar = new IRVarDeclStmt(((VarDeclStmt) stmt).varID, ((VarDeclStmt) stmt).type);
+                programIR.add(new IRInstruction(irDeclVar));
             }
         }
         return programIR;

@@ -4,11 +4,11 @@
 
 // High-Level Program structures
 class VarDeclStmt extends Statement {
-    final String varName;
+    final VarID varID;
     final String type;
 
-    VarDeclStmt(String name, String type) {
-        this.varName = name;
+    VarDeclStmt(VarID varID, String type) {
+        this.varID = varID;
         this.type = type;
     }
 }

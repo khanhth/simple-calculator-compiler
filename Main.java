@@ -2,6 +2,7 @@ public class Main {
     public static void main(String[] args) {
         // The source code file can now change variables dynamically mid-flight!
         String sourceCode = "int x; int y; x = 5; y = 10; x * 3 + y;";
+        // String sourceCode = "int z; int y; x = 5; y = 10; x * 3 + y;"; // <= throws compile error for undeclared variable 'x'
         System.out.println("--- Starting Modern Unified Decoupled 3AC Compiler ---\n");
 
         CompilerContext context = new CompilerContext();

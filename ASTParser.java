@@ -40,6 +40,7 @@ class ASTParser {
             lexer.match(TokenKind.SEMI); // Consume semicolon anchor
 
             context.registerVariable(varName, "int");
+            program.statements.add(new VarDeclStmt(context.getSymbolTable().lookup(varName), "int"));
         }
 
         // 2. Sequential Statement Operations Loop
@@ -55,6 +56,9 @@ class ASTParser {
                 lexer.match(TokenKind.SEMI);
 
                 VarID id = context.getSymbolTable().lookup(varName);
+                if (id == null) {
+                    throw new RuntimeException("Compile Error: Variable '" + varName + "' used before declaration.");
+                }
                 program.statements.add(new AssignStmt(id, value));
             }
             // Scenario B: It's a plain math expression evaluated for output (e.g., x + 3;)

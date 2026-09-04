@@ -37,3 +37,5 @@
 Why Constant Folding optimization is a Massive Backend Performance WinLook at the emitted assembly language instructions:
 - Without the Optimizer: Your CPU would have to fetch the variable, move it to a hardware scratch register, invoke a costly physical MUL clock-cycle hardware command, and then call an ADD instruction command.
 - With the Optimizer: The math commands completely disappear from the hardware code layout. The backend simply emits static loads (LOAD r1, 25), completely eliminating math computation latency at runtime.
+[-] 15. Add Conditional Expressions (like an if statement block) to the 3AC stream using branch labels.
+[-] 16. Add a formal Error Diagnostic Logger inside your CompilerContext to print line and column errors if syntax bugs happen.

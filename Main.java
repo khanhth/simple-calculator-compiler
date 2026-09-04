@@ -3,9 +3,9 @@ public class Main {
         // String sourceCode = "int x; int y; x = 5; y = 10; 5 * 3 + y;";
         // String sourceCode = "int x; x = 2222; 10 * 20;";
         // String sourceCode = "int x; int y; x = 5 * 3 + 2; 10 * 20; y = x +1; ";
-        String sourceCode = "int x; x = 5 * 3 + 2; 10 * 20;";
+        String sourceCode = "int z; x = 5 * 3 + 2; 10 * 20;";
         System.out.println("--- Starting Advanced Optimizing Compiler Pipeline ---\n");
-        System.out.println("--- Source code: =>     " + sourceCode + "\n");
+        System.out.println("[Source code]\n\n     " + sourceCode + "\n");
 
         CompilerContext context = new CompilerContext();
         Lexer lexer = new Lexer(sourceCode);
@@ -14,6 +14,17 @@ public class Main {
 
         System.out.println("[Phase 1] Processing source text definitions...");
         new ASTPrinter().print(programTree); // Visualize the AST structure
+
+        // ─── NEW STATIC TYPE VERIFICATION GUARD ───
+        System.out.println("\n[Phase 2] Running Semantic Type Checker...");
+        TypeContext semanticState = new TypeContext(context);
+        TypeChecker typeGuard = new TypeChecker();
+
+        if (!typeGuard.check(programTree, semanticState)) {
+            System.out.println("🛑 COMPILATION HALTED: Semantic validation failed.");
+            return; // Block illegal operations from generating instructions
+        }
+        System.out.println("👉 Semantic Analysis Verification Clean.");
 
         // Step 1: Generate Raw Middle-End IR
         IRGenerator irGen = new IRGenerator();
@@ -28,7 +39,7 @@ public class Main {
         System.out.println("\n[Middle-End] Running Dead Code Elimination Pass...");
         currentIR = optimizer.eliminateDeadCode(currentIR); // Trims unused nodes
 
-        System.out.println("\n[Phase 2] Fully Optimized Final IR Stream:");
+        System.out.println("\n[Phase 3] Fully Optimized Final IR Stream:");
         for (IRInstruction inst : currentIR) {
             System.out.println("   " + inst);
         }
